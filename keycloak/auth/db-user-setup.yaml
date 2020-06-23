@@ -1,0 +1,52 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  creationTimestamp: null
+  name: db-user-setup
+spec:
+  ttlSecondsAfterFinished: 120
+  template:
+    metadata:
+      creationTimestamp: null
+    spec:
+      containers:
+      - image: postgres
+        name: db-user-setup
+        resources: {}
+        envFrom: 
+        - secretRef: 
+            name: keycloak-postgres-user # DB_USER, DB_PASSWORD
+        env:
+        - name: PGDATABASE
+          valueFrom:
+            configMapKeyRef: 
+              name: keycloak-env
+              key: DB_DATABASE
+        - name: PGHOST
+          valueFrom: 
+            configMapKeyRef: 
+              name: keycloak-env
+              key: DB_ADDR
+        - name: PGSCHEMA
+          valueFrom:
+            configMapKeyRef: 
+              name: keycloak-env
+              key: KEYCLOAK_SCHEMA
+        - name: PGUSER
+          valueFrom: 
+            secretKeyRef: 
+              name: postgres-admin-user
+              key: POSTGRES_USER
+        - name: PGPASSWORD
+          valueFrom: 
+            secretKeyRef: 
+              name: postgres-admin-user
+              key: POSTGRES_PASSWORD
+        command: ["/bin/bash"]
+        args: 
+        - "-c"
+        - psql -a -c "CREATE SCHEMA $PGSCHEMA"
+        - "|"
+        - cat
+      restartPolicy: Never
+#; CREATE USER $DB_USER PASSWORD '$DB_PASSWORD'; GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA $PGSCHEMA TO $DB_USER";

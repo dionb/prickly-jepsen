@@ -1,0 +1,27 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# secretGenerator:
+# - name: keycloak-admin-user
+#   literals: 
+#   - KEYCLOAK_USER: admin
+#   files:
+#   - KEYCLOAK_PASSWORD: keycloak-password.txt
+# # secretGenerator:
+# - name: keycloak-postgres-user
+#   literals: 
+#   - DB_USER: keycloak
+#   files:
+#   - DB_PASSWORD: keycloak-db-password.txt
+# # secretGenerator:
+# - name: postgres-admin-user
+#   literals: 
+#   - PGUSER: postgresadmin
+#   files:
+#   - PGPASSWORD: postgres-admin-password.txt
+# generatorOptions:
+#   disableNameSuffixHash: true
+resources: 
+- config.yaml
+- postgres.yaml
+- db-user-setup.yaml
+- keycloak.yaml
